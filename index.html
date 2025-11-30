@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAT脚本构建器</title>
+    <style>
+        :root {
+            --cyan-900: #0c1d25;
+            --cyan-800: #122a36;
+            --cyan-700: #163746;
+            --cyan-600: #1c465a;
+            --cyan-500: #22566f;
+            --cyan-400: #2a6a87;
+            --cyan-300: #3c81a0;
+            --cyan-200: #5da3c0;
+            --pink-700: #b42c5c;
+            --pink-600: #c5396a;
+            --pink-500: #d64678;
+            --pink-400: #e25d8c;
+            --emerald-700: #0d5a4f;
+            --emerald-600: #116e5f;
+            --emerald-500: #14836f;
+            --rose-700: #9e1f45;
+            --rose-600: #b3244d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0a0f15;
+            color: var(--cyan-300);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--cyan-300), var(--pink-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: var(--cyan-200);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--cyan-800);
+            border: 1px solid var(--cyan-600);
+        }
+        
+        .checkbox-label.active {
+            background-color: var(--cyan-600);
+            box-shadow: 0 0 15px rgba(42, 106, 135, 0.4);
+        }
+        
+        .checkbox-label input {
+            display: none;
+        }
+        
+        .checkbox-label svg {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+        
+        .adapter-control {
+            width: 100%;
+            max-width: 28rem;
+        }
+        
+        .adapter-control label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .adapter-control input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 0.75rem;
+            background-color: var(--cyan-800);
+            border: 1px solid var(--cyan-600);
+            color: var(--cyan-200);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .adapter-control input:focus {
+            outline: none;
+            border-color: var(--cyan-400);
+            box-shadow: 0 0 0 3px rgba(42, 106, 135, 0.3);
+        }
+        
+        .command-section {
+            background-color: var(--cyan-800);
+            border: 1px solid rgba(42, 106, 135, 0.25);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.75rem;
+            color: var(--pink-400);
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            border: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        
+        .btn svg {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-taskkill {
+            background-color: var(--pink-700);
+            color: white;
+        }
+        
+        .btn-taskkill:hover {
+            background-color: var(--pink-600);
+            box-shadow: 0 0 10px rgba(214, 70, 120, 0.4);
+        }
+        
+        .btn-network {
+            background-color: var(--emerald-700);
+            color: white;
+        }
+        
+        .btn-network:hover {
+            background-color: var(--emerald-600);
+            box-shadow: 0 0 10px rgba(20, 131, 111, 0.4);
+        }
+        
+        .btn-custom {
+            background-color: var(--cyan-600);
+            color: white;
+        }
+        
+        .btn-custom:hover {
+            background-color: var(--cyan-500);
+            box-shadow: 0 0 10px rgba(42, 106, 135, 0.4);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            border: 2px dashed var(--cyan-600);
+            border-radius: 1.5rem;
+            background-color: rgba(18, 42, 54, 0.2);
+            color: rgba(60, 129, 160, 0.6);
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-btns {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .empty-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            background-color: rgba(182, 44, 92, 0.15);
+            border: 1px solid rgba(182, 44, 92, 0.3);
+            color: var(--pink-300);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .empty-btn:hover {
+            background-color: rgba(182, 44, 92, 0.25);
+        }
+        
+        .empty-btn-network {
+            background-color: rgba(13, 90, 79, 0.15);
+            border-color: rgba(13, 90, 79, 0.3);
+            color: var(--emerald-300);
+        }
+        
+        .empty-btn-network:hover {
+            background-color: rgba(13, 90, 79, 0.25);
+        }
+        
+        .command-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .command-item {
+            background-color: var(--cyan-700);
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--cyan-400);
+        }
+        
+        .command-item.taskkill {
+            border-left-color: var(--pink-400);
+            background-color: rgba(180, 44, 92, 0.1);
+        }
+        
+        .command-item.network {
+            border-left-color: var(--emerald-400);
+            background-color: rgba(13, 90, 79, 0.15);
+        }
+        
+        .command-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .command-type {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .command-type.taskkill {
+            color: var(--pink-300);
+        }
+        
+        .command-type.network {
+            color: var(--emerald-300);
+        }
+        
+        .command-type::before {
+            content: "●";
+            margin-right: 0.5rem;
+            font-size: 1.2em;
+        }
+        
+        .command-id {
+            background-color: rgba(30, 55, 70, 0.7);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            margin-left: 0.75rem;
+        }
+        
+        .command-content {
+            margin-bottom: 1rem;
+        }
+        
+        .command-content label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .command-content input,
+        .command-content textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            background-color: rgba(22, 55, 70, 0.7);
+            border: 1px solid var(--cyan-600);
+            color: var(--cyan-200);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .command-content textarea {
+            min-height: 6rem;
+            resize: vertical;
+        }
+        
+        .command-content input:focus,
+        .command-content textarea:focus {
+            outline: none;
+            border-color: var(--cyan-400);
+            box-shadow: 0 0 0 3px rgba(42, 106, 135, 0.3);
+        }
+        
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .time-input {
+            position: relative;
+        }
+        
+        .time-input svg {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1rem;
+            height: 1rem;
+        }
+        
+        .time-input.enable svg {
+            color: var(--emerald-300);
+        }
+        
+        .time-input.disable svg {
+            color: var(--rose-300);
+        }
+        
+        .time-input input {
+            padding-right: 2rem;
+        }
+        
+        .info-box {
+            background-color: rgba(30, 55, 70, 0.5);
+            border: 1px solid rgba(20, 131, 111, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .info-box svg {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+            color: var(--emerald-300);
+        }
+        
+        .command-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .action-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--cyan-800);
+            border: 1px solid var(--cyan-600);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--cyan-700);
+        }
+        
+        .action-btn svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            stroke-width: 1.5;
+        }
+        
+        .action-btn.move {
+            color: var(--cyan-300);
+        }
+        
+        .action-btn.delete {
+            color: var(--rose-300);
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .action-btn:disabled:hover {
+            background-color: var(--cyan-800);
+        }
+        
+        .output-section {
+            background-color: var(--cyan-800);
+            border: 1px solid rgba(42, 106, 135, 0.25);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .output-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .output-title svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.75rem;
+            color: var(--cyan-300);
+        }
+        
+        .download-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            width: 100%;
+            justify-content: flex-end;
+        }
+        
+        .btn-download-main {
+            background: linear-gradient(to right, var(--cyan-600), var(--cyan-700));
+            color: white;
+            min-width: 15rem;
+        }
+        
+        .btn-download-main:hover {
+            background: linear-gradient(to right, var(--cyan-500), var(--cyan-600));
+            box-shadow: 0 0 15px rgba(42, 106, 135, 0.5);
+        }
+        
+        .btn-download-helper {
+            background-color: var(--emerald-700);
+            color: white;
+        }
+        
+        .btn-download-helper:hover {
+            background-color: var(--emerald-600);
+            box-shadow: 0 0 10px rgba(20, 131, 111, 0.4);
+        }
+        
+        .btn-download-helper-disable {
+            background-color: var(--rose-700);
+            color: white;
+        }
+        
+        .btn-download-helper-disable:hover {
+            background-color: var(--rose-600);
+            box-shadow: 0 0 10px rgba(158, 31, 69, 0.4);
+        }
+        
+        .script-preview {
+            background-color: #0a121a;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            max-height: 25rem;
+            border: 1px solid var(--cyan-700);
+            margin-bottom: 1.5rem;
+            white-space: pre-wrap;
+            color: var(--cyan-200);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            background-color: rgba(18, 42, 54, 0.3);
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid rgba(42, 106, 135, 0.2);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-header svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+        
+        .stat-header.settings svg {
+            color: var(--cyan-300);
+        }
+        
+        .stat-header.network svg {
+            color: var(--emerald-300);
+        }
+        
+        .stat-header.taskkill svg {
+            color: var(--pink-300);
+        }
+        
+        .stat-title {
+            font-weight: 500;
+            color: var(--cyan-200);
+        }
+        
+        .stat-value {
+            font-size: 0.85rem;
+            color: var(--cyan-300);
+        }
+        
+        .info-section {
+            background: linear-gradient(to right, var(--cyan-800), var(--cyan-850));
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(42, 106, 135, 0.15);
+        }
+        
+        .info-section svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+            color: var(--cyan-300);
+            flex-shrink: 0;
+        }
+        
+        .info-content {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .info-text {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--cyan-300);
+        }
+        
+        .info-text p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            background-color: rgba(158, 31, 69, 0.3);
+            padding: 0.15rem 0.3rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .time-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header,
+            .output-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .action-buttons,
+            .download-group {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>BAT 脚本构建器</h1>
+            <p class="subtitle">高级批处理脚本生成工具 • 强制提权 • 网络调度</p>
+            
+            <div class="controls">
+                <label class="checkbox-label active" id="elevateLabel">
+                    <input type="checkbox" id="autoElevate" checked>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>自动提权</span>
+                </label>
+                
+                <div class="adapter-control">
+                    <label for="globalAdapter">网络适配器名称</label>
+                    <input type="text" id="globalAdapter" value="以太网" placeholder="例如：以太网、WLAN">
+                </div>
+            </div>
+        </header>
+        
+        <section class="command-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    脚本命令序列
+                </h2>
+                <div class="action-buttons">
+                    <button class="btn btn-taskkill" id="addTaskkill">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        <span>结束进程</span>
+                    </button>
+                    <button class="btn btn-network" id="addNetwork">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="3" y1="15" x2="21" y2="15"></line>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                            <line x1="15" y1="3" x2="15" y2="21"></line>
+                        </svg>
+                        <span>网络调度</span>
+                    </button>
+                    <button class="btn btn-custom" id="addCustom">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>自定义命令</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="command-list" id="commandList">
+                <div class="empty-state">
+                    <h3>未添加任何命令</h3>
+                    <p>点击上方按钮添加命令序列</p>
+                    <div class="empty-btns">
+                        <button class="empty-btn" id="emptyAddTaskkill">添加进程命令</button>
+                        <button class="empty-btn empty-btn-network" id="emptyAddNetwork">添加网络调度</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="output-section">
+            <div class="output-header">
+                <h2 class="output-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    生成脚本
+                </h2>
+                <div class="download-group">
+                    <button class="btn btn-download-main" id="downloadMain">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        下载主脚本
+                    </button>
+                    <button class="btn btn-download-helper" id="downloadEnable">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 11 11 11 11 3"></polyline>
+                            <path d="M20.91 5.65A2 2 0 0 1 20 5H9a2 2 0 0 0-1.91 1.35L3.78 16.66A2 2 0 0 0 4 18h8.53a7.73 7.73 0 0 0 7.73 7.73 1 1 0 0 0 1-1V6a1 1 0 0 0-.09-.35z"></path>
+                        </svg>
+                        启用网络
+                    </button>
+                    <button class="btn btn-download-helper-disable" id="downloadDisable">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 11 11 11 11 3"></polyline>
+                            <path d="M20.91 5.65A2 2 0 0 1 20 5H9a2 2 0 0 0-1.91 1.35L3.78 16.66A2 2 0 0 0 4 18h8.53a7.73 7.73 0 0 0 7.73 7.73 1 1 0 0 0 1-1V6a1 1 0 0 0-.09-.35z"></path>
+                            <line x1="14" y1="7" x2="7" y2="14"></line>
+                            <line x1="17" y1="10" x2="10" y2="17"></line>
+                        </svg>
+                        禁用网络
+                    </button>
+                </div>
+            </div>
+            
+            <div class="script-preview" id="scriptPreview">
+@echo off
+:: 尚未添加任何命令
+echo 请先添加命令序列
+pause
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <h3 class="stat-title">自动提权</h3>
+                    </div>
+                    <p class="stat-value">✓ 已启用 - 脚本将以管理员权限运行</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header network">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path>
+                            <polygon points="18 2 22 6 18 10 14 6 18 2"></polygon>
+                        </svg>
+                        <h3 class="stat-title">网络调度</h3>
+                    </div>
+                    <p class="stat-value">适配器: 以太网<br>任务数: 0</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header taskkill">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 3H4a2 2 0 0 0-2 2v5m18-8h-6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zM14 3v4a2 2 0 0 0 2 2h4"></path>
+                        </svg>
+                        <h3 class="stat-title">进程管理</h3>
+                    </div>
+                    <p class="stat-value">任务数: 0</p>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <div class="info-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="8"></line>
+                    </svg>
+                    <div class="info-text">
+                        <p>• 脚本使用 UTF-8 with BOM 编码，完美支持中文字符</p>
+                        <p>• <span class="highlight">重要</span>：启用和禁用网络的辅助脚本已添加<span class="highlight">强制提权</span>功能，确保在管理员权限下运行</p>
+                        <p>• 网络计划任务需要将辅助脚本放在主脚本相同目录</p>
+                        <p>• 禁用自动提权后，主脚本将不再包含提权代码（但辅助脚本始终包含提权）</p>
+                        <p>• 所有计划任务创建时使用 /f 参数强制覆盖同名任务</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // State variables
+            let commands = [
+                { id: 1, type: 'taskkill', processName: '' }
+            ];
+            let commandCounter = 2;
+            let autoElevate = true;
+            let globalAdapter = '以太网';
+            
+            // DOM elements
+            const autoElevateCheckbox = document.getElementById('autoElevate');
+            const elevateLabel = document.getElementById('elevateLabel');
+            const globalAdapterInput = document.getElementById('globalAdapter');
+            const commandList = document.getElementById('commandList');
+            const addTaskkillBtn = document.getElementById('addTaskkill');
+            const addNetworkBtn = document.getElementById('addNetwork');
+            const addCustomBtn = document.getElementById('addCustom');
+            const emptyAddTaskkillBtn = document.getElementById('emptyAddTaskkill');
+            const emptyAddNetworkBtn = document.getElementById('emptyAddNetwork');
+            const downloadMainBtn = document.getElementById('downloadMain');
+            const downloadEnableBtn = document.getElementById('downloadEnable');
+            const downloadDisableBtn = document.getElementById('downloadDisable');
+            const scriptPreview = document.getElementById('scriptPreview');
+            
+            // Event listeners
+            autoElevateCheckbox.addEventListener('change', function() {
+                autoElevate = this.checked;
+                elevateLabel.classList.toggle('active', autoElevate);
+                updateScriptPreview();
+                updateStats();
+            });
+            
+            globalAdapterInput.addEventListener('input', function() {
+                globalAdapter = this.value.trim() || '以太网';
+                updateScriptPreview();
+                updateStats();
+            });
+            
+            addTaskkillBtn.addEventListener('click', () => addCommand('taskkill'));
+            addNetworkBtn.addEventListener('click', () => addCommand('network'));
+            addCustomBtn.addEventListener('click', () => addCommand('custom'));
+            emptyAddTaskkillBtn.addEventListener('click', () => addCommand('taskkill'));
+            emptyAddNetworkBtn.addEventListener('click', () => addCommand('network'));
+            
+            downloadMainBtn.addEventListener('click', downloadMainScript);
+            downloadEnableBtn.addEventListener('click', downloadEnableScript);
+            downloadDisableBtn.addEventListener('click', downloadDisableScript);
+            
+            // Initialize the UI
+            renderCommands();
+            updateScriptPreview();
+            updateStats();
+            
+            // Functions
+            function addCommand(type) {
+                const newCommand = {
+                    id: commandCounter++,
+                    type: type
+                };
+                
+                if (type === 'taskkill') {
+                    newCommand.processName = '';
+                } else if (type === 'custom') {
+                    newCommand.command = '';
+                } else if (type === 'network') {
+                    newCommand.enableTime = '';
+                    newCommand.disableTime = '';
+                }
+                
+                commands.push(newCommand);
+                renderCommands();
+                updateScriptPreview();
+                updateStats();
+            }
+            
+            function removeCommand(id) {
+                commands = commands.filter(cmd => cmd.id !== id);
+                renderCommands();
+                updateScriptPreview();
+                updateStats();
+            }
+            
+            function moveCommand(id, direction) {
+                const index = commands.findIndex(cmd => cmd.id === id);
+                if (index === -1) return;
+                
+                if (direction === 'up' && index > 0) {
+                    [commands[index], commands[index - 1]] = [commands[index - 1], commands[index]];
+                } else if (direction === 'down' && index < commands.length - 1) {
+                    [commands[index], commands[index + 1]] = [commands[index + 1], commands[index]];
+                }
+                
+                renderCommands();
+                updateScriptPreview();
+            }
+            
+            function updateCommand(id, field, value) {
+                const command = commands.find(cmd => cmd.id === id);
+                if (command) {
+                    command[field] = value;
+                    updateScriptPreview();
+                    updateStats();
+                }
+            }
+            
+            function renderCommands() {
+                if (commands.length === 0) {
+                    commandList.innerHTML = `
+                        <div class="empty-state">
+                            <h3>未添加任何命令</h3>
+                            <p>点击上方按钮添加命令序列</p>
+                            <div class="empty-btns">
+                                <button class="empty-btn" id="emptyAddTaskkill">添加进程命令</button>
+                                <button class="empty-btn empty-btn-network" id="emptyAddNetwork">添加网络调度</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('emptyAddTaskkill').addEventListener('click', () => addCommand('taskkill'));
+                    document.getElementById('emptyAddNetwork').addEventListener('click', () => addCommand('network'));
+                    return;
+                }
+                
+                let html = '';
+                commands.forEach((cmd, index) => {
+                    if (cmd.type === 'taskkill') {
+                        html += `
+                            <div class="command-item taskkill" data-id="${cmd.id}">
+                                <div class="command-header">
+                                    <div class="command-type taskkill">结束进程<span class="command-id">ID: ${cmd.id}</span></div>
+                                    <div class="command-actions">
+                                        <button class="action-btn move ${index === 0 ? 'disabled' : ''}" data-direction="up" ${index === 0 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="18 15 12 9 6 15"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn move ${index === commands.length - 1 ? 'disabled' : ''}" data-direction="down" ${index === commands.length - 1 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn delete">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="command-content">
+                                    <label for="processName-${cmd.id}">进程名称</label>
+                                    <input type="text" id="processName-${cmd.id}" class="process-name" value="${cmd.processName}" placeholder="输入进程名 (例如: chrome, notepad)">
+                                    <p class="command-hint">生成命令: <span class="font-mono">taskkill /f /im ${cmd.processName || '[进程名]'}.exe</span></p>
+                                </div>
+                            </div>
+                        `;
+                    } else if (cmd.type === 'network') {
+                        html += `
+                            <div class="command-item network" data-id="${cmd.id}">
+                                <div class="command-header">
+                                    <div class="command-type network">网络调度<span class="command-id">ID: ${cmd.id}</span></div>
+                                    <div class="command-actions">
+                                        <button class="action-btn move ${index === 0 ? 'disabled' : ''}" data-direction="up" ${index === 0 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="18 15 12 9 6 15"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn move ${index === commands.length - 1 ? 'disabled' : ''}" data-direction="down" ${index === commands.length - 1 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn delete">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="command-content">
+                                    <div class="time-inputs">
+                                        <div class="time-input enable">
+                                            <label for="enableTime-${cmd.id}">启用时间</label>
+                                            <input type="time" id="enableTime-${cmd.id}" class="enable-time" value="${cmd.enableTime}">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                        </div>
+                                        <div class="time-input disable">
+                                            <label for="disableTime-${cmd.id}">禁用时间</label>
+                                            <input type="time" id="disableTime-${cmd.id}" class="disable-time" value="${cmd.disableTime}">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="info-box">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                                            <line x1="12" y1="8" x2="12" y2="8"></line>
+                                        </svg>
+                                        计划任务将使用全局适配器名称: <span class="font-mono">${globalAdapter || '未设置'}</span><br>
+                                        辅助脚本已包含<span class="highlight">强制提权</span>功能，确保网络操作权限
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (cmd.type === 'custom') {
+                        html += `
+                            <div class="command-item" data-id="${cmd.id}">
+                                <div class="command-header">
+                                    <div class="command-type">自定义命令<span class="command-id">ID: ${cmd.id}</span></div>
+                                    <div class="command-actions">
+                                        <button class="action-btn move ${index === 0 ? 'disabled' : ''}" data-direction="up" ${index === 0 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="18 15 12 9 6 15"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn move ${index === commands.length - 1 ? 'disabled' : ''}" data-direction="down" ${index === commands.length - 1 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn delete">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="command-content">
+                                    <label for="customCommand-${cmd.id}">自定义命令</label>
+                                    <textarea id="customCommand-${cmd.id}" class="custom-command" placeholder="输入任意批处理命令 (例如: ipconfig /flushdns, shutdown /l)">${cmd.command || ''}</textarea>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                commandList.innerHTML = html;
+                
+                // Add event listeners to the newly rendered elements
+                document.querySelectorAll('.action-btn.move').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const commandId = parseInt(this.closest('.command-item').dataset.id);
+                        const direction = this.dataset.direction;
+                        moveCommand(commandId, direction);
+                    });
+                });
+                
+                document.querySelectorAll('.action-btn.delete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const commandId = parseInt(this.closest('.command-item').dataset.id);
+                        removeCommand(commandId);
+                    });
+                });
+                
+                document.querySelectorAll('.process-name').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const commandId = parseInt(this.id.split('-')[1]);
+                        updateCommand(commandId, 'processName', this.value);
+                    });
+                });
+                
+                document.querySelectorAll('.enable-time').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const commandId = parseInt(this.id.split('-')[1]);
+                        updateCommand(commandId, 'enableTime', this.value);
+                    });
+                });
+                
+                document.querySelectorAll('.disable-time').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const commandId = parseInt(this.id.split('-')[1]);
+                        updateCommand(commandId, 'disableTime', this.value);
+                    });
+                });
+                
+                document.querySelectorAll('.custom-command').forEach(textarea => {
+                    textarea.addEventListener('input', function() {
+                        const commandId = parseInt(this.id.split('-')[1]);
+                        updateCommand(commandId, 'command', this.value);
+                    });
+                });
+            }
+            
+            function generateMainScript() {
+                let content = '';
+                
+                if (autoElevate) {
+                    content += `@echo off
+:: BatchGotAdmin (Run as Admin)
+:-------------------------------------
+REM  --> Check for permissions
+>nul 2>&1 "%SYSTEMROOT%\\system32\\cacls.exe" "%SYSTEMROOT%\\system32\\config\\system"
+
+REM --> If error flag set, we do not have admin.
+if '%errorlevel%' NEQ '0' (
+    echo Requesting administrative privileges...
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\\getadmin.vbs"
+    echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\\getadmin.vbs"
+
+    "%temp%\\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    if exist "%temp%\\getadmin.vbs" ( del "%temp%\\getadmin.vbs" )
+    pushd "%CD%"
+    CD /D "%~dp0"
+:--------------------------------------\r\n\r\n`;
+                }
+                
+                commands.forEach(cmd => {
+                    if (cmd.type === 'taskkill' && cmd.processName?.trim()) {
+                        content += `taskkill /f /im ${cmd.processName}.exe\r\n`;
+                    } else if (cmd.type === 'custom' && cmd.command?.trim()) {
+                        content += `${cmd.command}\r\n`;
+                    } else if (cmd.type === 'network') {
+                        if (cmd.enableTime && globalAdapter.trim()) {
+                            const taskName = `Enable_${globalAdapter.replace(/\\s+/g, '_')}_${cmd.id}`;
+                            content += `schtasks /create /tn "${taskName}" /tr "\\"%~dp0EnableNetwork.bat\\"" /sc daily /st ${cmd.enableTime} /ru "SYSTEM" /rl HIGHEST /f\r\n`;
+                        }
+                        if (cmd.disableTime && globalAdapter.trim()) {
+                            const taskName = `Disable_${globalAdapter.replace(/\\s+/g, '_')}_${cmd.id}`;
+                            content += `schtasks /create /tn "${taskName}" /tr "\\"%~dp0DisableNetwork.bat\\"" /sc daily /st ${cmd.disableTime} /ru "SYSTEM" /rl HIGHEST /f\r\n`;
+                        }
+                    }
+                });
+                
+                content += '\r\n@echo Script execution completed!\r\npause';
+                return `\uFEFF${content}`;
+            }
+            
+            function generateEnableScript() {
+                return `\uFEFF@echo off
+:: BatchGotAdmin (Run as Admin) - 强制提权
+:-------------------------------------
+REM  --> Check for permissions
+>nul 2>&1 "%SYSTEMROOT%\\system32\\cacls.exe" "%SYSTEMROOT%\\system32\\config\\system"
+
+REM --> If error flag set, we do not have admin.
+if '%errorlevel%' NEQ '0' (
+    echo Requesting administrative privileges...
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\\getadmin.vbs"
+    echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\\getadmin.vbs"
+
+    "%temp%\\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    if exist "%temp%\\getadmin.vbs" ( del "%temp%\\getadmin.vbs" )
+    pushd "%CD%"
+    CD /D "%~dp0"
+:--------------------------------------
+
+netsh interface set interface "${globalAdapter}" enable
+@echo Network enabled successfully!
+exit`;
+            }
+            
+            function generateDisableScript() {
+                return `\uFEFF@echo off
+:: BatchGotAdmin (Run as Admin) - 强制提权
+:-------------------------------------
+REM  --> Check for permissions
+>nul 2>&1 "%SYSTEMROOT%\\system32\\cacls.exe" "%SYSTEMROOT%\\system32\\config\\system"
+
+REM --> If error flag set, we do not have admin.
+if '%errorlevel%' NEQ '0' (
+    echo Requesting administrative privileges...
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\\getadmin.vbs"
+    echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\\getadmin.vbs"
+
+    "%temp%\\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    if exist "%temp%\\getadmin.vbs" ( del "%temp%\\getadmin.vbs" )
+    pushd "%CD%"
+    CD /D "%~dp0"
+:--------------------------------------
+
+netsh interface set interface "${globalAdapter}" disable
+@echo Network disabled successfully!
+exit`;
+            }
+            
+            function downloadMainScript() {
+                const content = generateMainScript();
+                downloadFile(content, 'GeneratedScript.bat');
+            }
+            
+            function downloadEnableScript() {
+                const content = generateEnableScript();
+                downloadFile(content, 'EnableNetwork.bat');
+            }
+            
+            function downloadDisableScript() {
+                const content = generateDisableScript();
+                downloadFile(content, 'DisableNetwork.bat');
+            }
+            
+            function downloadFile(content, filename) {
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 0);
+            }
+            
+            function updateScriptPreview() {
+                scriptPreview.textContent = generateMainScript();
+            }
+            
+            function updateStats() {
+                // Update auto-elevate status
+                document.querySelector('.stat-card:nth-child(1) .stat-value').textContent = 
+                    autoElevate ? '✓ 已启用 - 脚本将以管理员权限运行' : '✗ 已禁用 - 脚本将在当前权限下运行';
+                
+                // Update network stats
+                const networkTaskCount = commands.filter(cmd => cmd.type === 'network').length;
+                document.querySelector('.stat-card:nth-child(2) .stat-value').innerHTML = 
+                    `适配器: ${globalAdapter}<br>任务数: ${networkTaskCount}`;
+                
+                // Update taskkill stats
+                const taskkillCount = commands.filter(cmd => cmd.type === 'taskkill').length;
+                document.querySelector('.stat-card:nth-child(3) .stat-value').textContent = `任务数: ${taskkillCount}`;
+            }
+        });
+    </script>
+</body>
+</html>
