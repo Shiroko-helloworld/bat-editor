@@ -23,6 +23,10 @@
             --emerald-500: #14836f;
             --rose-700: #9e1f45;
             --rose-600: #b3244d;
+            --amber-700: #b46c0d;
+            --amber-600: #c57a11;
+            --amber-500: #d68a14;
+            --amber-400: #e29a2a;
         }
         
         * {
@@ -48,6 +52,34 @@
         header {
             text-align: center;
             margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .github-link {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: var(--cyan-800);
+            border-radius: 0.75rem;
+            text-decoration: none;
+            color: var(--cyan-300);
+            transition: all 0.3s ease;
+            border: 1px solid var(--cyan-600);
+        }
+        
+        .github-link:hover {
+            background-color: var(--cyan-700);
+            color: var(--cyan-200);
+            box-shadow: 0 0 10px rgba(42, 106, 135, 0.4);
+        }
+        
+        .github-link svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
         }
         
         h1 {
@@ -209,6 +241,26 @@
             box-shadow: 0 0 10px rgba(20, 131, 111, 0.4);
         }
         
+        .btn-delete {
+            background-color: var(--rose-700);
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background-color: var(--rose-600);
+            box-shadow: 0 0 10px rgba(158, 31, 69, 0.4);
+        }
+        
+        .btn-move {
+            background-color: var(--amber-700);
+            color: white;
+        }
+        
+        .btn-move:hover {
+            background-color: var(--amber-600);
+            box-shadow: 0 0 10px rgba(180, 108, 13, 0.4);
+        }
+        
         .btn-custom {
             background-color: var(--cyan-600);
             color: white;
@@ -270,6 +322,26 @@
             background-color: rgba(13, 90, 79, 0.25);
         }
         
+        .empty-btn-delete {
+            background-color: rgba(158, 31, 69, 0.15);
+            border-color: rgba(158, 31, 69, 0.3);
+            color: var(--rose-300);
+        }
+        
+        .empty-btn-delete:hover {
+            background-color: rgba(158, 31, 69, 0.25);
+        }
+        
+        .empty-btn-move {
+            background-color: rgba(180, 108, 13, 0.15);
+            border-color: rgba(180, 108, 13, 0.3);
+            color: var(--amber-300);
+        }
+        
+        .empty-btn-move:hover {
+            background-color: rgba(180, 108, 13, 0.25);
+        }
+        
         .command-list {
             display: flex;
             flex-direction: column;
@@ -294,6 +366,16 @@
             background-color: rgba(13, 90, 79, 0.15);
         }
         
+        .command-item.delete {
+            border-left-color: var(--rose-400);
+            background-color: rgba(158, 31, 69, 0.15);
+        }
+        
+        .command-item.move {
+            border-left-color: var(--amber-400);
+            background-color: rgba(180, 108, 13, 0.15);
+        }
+        
         .command-header {
             display: flex;
             justify-content: space-between;
@@ -316,6 +398,14 @@
         
         .command-type.network {
             color: var(--emerald-300);
+        }
+        
+        .command-type.delete {
+            color: var(--rose-300);
+        }
+        
+        .command-type.move {
+            color: var(--amber-300);
         }
         
         .command-type::before {
@@ -586,6 +676,14 @@
             color: var(--pink-300);
         }
         
+        .stat-header.delete svg {
+            color: var(--rose-300);
+        }
+        
+        .stat-header.move svg {
+            color: var(--amber-300);
+        }
+        
         .stat-title {
             font-weight: 500;
             color: var(--cyan-200);
@@ -654,12 +752,26 @@
             h1 {
                 font-size: 2rem;
             }
+            
+            .github-link {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 1rem;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
+            <a href="https://github.com/Shiroko-helloworld/bat-editor" class="github-link" target="_blank">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                GitHub
+            </a>
             <h1>BAT 脚本构建器</h1>
             <p class="subtitle">高级批处理脚本生成工具 • 强制提权 • 网络调度</p>
             
@@ -707,6 +819,21 @@
                         </svg>
                         <span>网络调度</span>
                     </button>
+                    <button class="btn btn-delete" id="addDelete">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        <span>删除文件夹</span>
+                    </button>
+                    <button class="btn btn-move" id="addMove">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <polyline points="23 20 23 14 17 14"></polyline>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                        </svg>
+                        <span>移动文件夹</span>
+                    </button>
                     <button class="btn btn-custom" id="addCustom">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -724,6 +851,8 @@
                     <div class="empty-btns">
                         <button class="empty-btn" id="emptyAddTaskkill">添加进程命令</button>
                         <button class="empty-btn empty-btn-network" id="emptyAddNetwork">添加网络调度</button>
+                        <button class="empty-btn empty-btn-delete" id="emptyAddDelete">添加删除命令</button>
+                        <button class="empty-btn empty-btn-move" id="emptyAddMove">添加移动命令</button>
                     </div>
                 </div>
             </div>
@@ -769,6 +898,7 @@
             
             <div class="script-preview" id="scriptPreview">
 @echo off
+chcp 65001>nul
 :: 尚未添加任何命令
 echo 请先添加命令序列
 pause
@@ -806,6 +936,29 @@ pause
                     </div>
                     <p class="stat-value">任务数: 0</p>
                 </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header delete">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        <h3 class="stat-title">删除操作</h3>
+                    </div>
+                    <p class="stat-value">任务数: 0</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header move">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <polyline points="23 20 23 14 17 14"></polyline>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                        </svg>
+                        <h3 class="stat-title">移动操作</h3>
+                    </div>
+                    <p class="stat-value">任务数: 0</p>
+                </div>
             </div>
             
             <div class="info-section">
@@ -820,6 +973,7 @@ pause
                         <p>• <span class="highlight">重要</span>：启用和禁用网络的辅助脚本已添加<span class="highlight">强制提权</span>功能，确保在管理员权限下运行</p>
                         <p>• 网络计划任务需要将辅助脚本放在主脚本相同目录</p>
                         <p>• 禁用自动提权后，主脚本将不再包含提权代码（但辅助脚本始终包含提权）</p>
+                        <p>• 所有脚本均包含 <span class="highlight">chcp 65001>nul</span> 命令以确保中文显示正常</p>
                         <p>• 所有计划任务创建时使用 /f 参数强制覆盖同名任务</p>
                     </div>
                 </div>
@@ -844,9 +998,13 @@ pause
             const commandList = document.getElementById('commandList');
             const addTaskkillBtn = document.getElementById('addTaskkill');
             const addNetworkBtn = document.getElementById('addNetwork');
+            const addDeleteBtn = document.getElementById('addDelete');
+            const addMoveBtn = document.getElementById('addMove');
             const addCustomBtn = document.getElementById('addCustom');
             const emptyAddTaskkillBtn = document.getElementById('emptyAddTaskkill');
             const emptyAddNetworkBtn = document.getElementById('emptyAddNetwork');
+            const emptyAddDeleteBtn = document.getElementById('emptyAddDelete');
+            const emptyAddMoveBtn = document.getElementById('emptyAddMove');
             const downloadMainBtn = document.getElementById('downloadMain');
             const downloadEnableBtn = document.getElementById('downloadEnable');
             const downloadDisableBtn = document.getElementById('downloadDisable');
@@ -868,9 +1026,13 @@ pause
             
             addTaskkillBtn.addEventListener('click', () => addCommand('taskkill'));
             addNetworkBtn.addEventListener('click', () => addCommand('network'));
+            addDeleteBtn.addEventListener('click', () => addCommand('delete'));
+            addMoveBtn.addEventListener('click', () => addCommand('move'));
             addCustomBtn.addEventListener('click', () => addCommand('custom'));
             emptyAddTaskkillBtn.addEventListener('click', () => addCommand('taskkill'));
             emptyAddNetworkBtn.addEventListener('click', () => addCommand('network'));
+            emptyAddDeleteBtn.addEventListener('click', () => addCommand('delete'));
+            emptyAddMoveBtn.addEventListener('click', () => addCommand('move'));
             
             downloadMainBtn.addEventListener('click', downloadMainScript);
             downloadEnableBtn.addEventListener('click', downloadEnableScript);
@@ -895,6 +1057,12 @@ pause
                 } else if (type === 'network') {
                     newCommand.enableTime = '';
                     newCommand.disableTime = '';
+                } else if (type === 'delete') {
+                    newCommand.folderPath = '';
+                } else if (type === 'move') {
+                    newCommand.sourcePath = '';
+                    newCommand.targetPath = '';
+                    newCommand.overwrite = false;
                 }
                 
                 commands.push(newCommand);
@@ -942,12 +1110,16 @@ pause
                             <div class="empty-btns">
                                 <button class="empty-btn" id="emptyAddTaskkill">添加进程命令</button>
                                 <button class="empty-btn empty-btn-network" id="emptyAddNetwork">添加网络调度</button>
+                                <button class="empty-btn empty-btn-delete" id="emptyAddDelete">添加删除命令</button>
+                                <button class="empty-btn empty-btn-move" id="emptyAddMove">添加移动命令</button>
                             </div>
                         </div>
                     `;
                     
                     document.getElementById('emptyAddTaskkill').addEventListener('click', () => addCommand('taskkill'));
                     document.getElementById('emptyAddNetwork').addEventListener('click', () => addCommand('network'));
+                    document.getElementById('emptyAddDelete').addEventListener('click', () => addCommand('delete'));
+                    document.getElementById('emptyAddMove').addEventListener('click', () => addCommand('move'));
                     return;
                 }
                 
@@ -1038,6 +1210,87 @@ pause
                                 </div>
                             </div>
                         `;
+                    } else if (cmd.type === 'delete') {
+                        html += `
+                            <div class="command-item delete" data-id="${cmd.id}">
+                                <div class="command-header">
+                                    <div class="command-type delete">删除文件夹<span class="command-id">ID: ${cmd.id}</span></div>
+                                    <div class="command-actions">
+                                        <button class="action-btn move ${index === 0 ? 'disabled' : ''}" data-direction="up" ${index === 0 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="18 15 12 9 6 15"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn move ${index === commands.length - 1 ? 'disabled' : ''}" data-direction="down" ${index === commands.length - 1 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn delete">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="command-content">
+                                    <label for="folderPath-${cmd.id}">目标文件夹路径</label>
+                                    <input type="text" id="folderPath-${cmd.id}" class="folder-path" value="${cmd.folderPath}" placeholder="输入要删除的文件夹路径 (例如: C:\\temp\\old_folder)">
+                                    <p class="command-hint">生成命令: <span class="font-mono">rd /s /q "${cmd.folderPath || '[路径]'}"</span></p>
+                                </div>
+                            </div>
+                        `;
+                    } else if (cmd.type === 'move') {
+                        html += `
+                            <div class="command-item move" data-id="${cmd.id}">
+                                <div class="command-header">
+                                    <div class="command-type move">移动文件夹<span class="command-id">ID: ${cmd.id}</span></div>
+                                    <div class="command-actions">
+                                        <button class="action-btn move ${index === 0 ? 'disabled' : ''}" data-direction="up" ${index === 0 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="18 15 12 9 6 15"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn move ${index === commands.length - 1 ? 'disabled' : ''}" data-direction="down" ${index === commands.length - 1 ? 'disabled' : ''}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn delete">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="command-content">
+                                    <div class="time-inputs">
+                                        <div>
+                                            <label for="sourcePath-${cmd.id}">源文件夹路径</label>
+                                            <input type="text" id="sourcePath-${cmd.id}" class="source-path" value="${cmd.sourcePath}" placeholder="源路径 (例如: C:\\temp\\source)">
+                                        </div>
+                                        <div>
+                                            <label for="targetPath-${cmd.id}">目标文件夹路径</label>
+                                            <input type="text" id="targetPath-${cmd.id}" class="target-path" value="${cmd.targetPath}" placeholder="目标路径 (例如: C:\\temp\\destination)">
+                                        </div>
+                                    </div>
+                                    <div class="time-inputs">
+                                        <div class="time-input">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" class="overwrite-checkbox" ${cmd.overwrite ? 'checked' : ''}>
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span>覆写目标</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <p class="command-hint">生成命令: <span class="font-mono">move /y "${cmd.sourcePath || '[源路径]'}" "${cmd.targetPath || '[目标路径]'}"</span></p>
+                                </div>
+                            </div>
+                        `;
                     } else if (cmd.type === 'custom') {
                         html += `
                             <div class="command-item" data-id="${cmd.id}">
@@ -1110,6 +1363,34 @@ pause
                     });
                 });
                 
+                document.querySelectorAll('.folder-path').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const commandId = parseInt(this.id.split('-')[1]);
+                        updateCommand(commandId, 'folderPath', this.value);
+                    });
+                });
+                
+                document.querySelectorAll('.source-path').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const commandId = parseInt(this.id.split('-')[1]);
+                        updateCommand(commandId, 'sourcePath', this.value);
+                    });
+                });
+                
+                document.querySelectorAll('.target-path').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const commandId = parseInt(this.id.split('-')[1]);
+                        updateCommand(commandId, 'targetPath', this.value);
+                    });
+                });
+                
+                document.querySelectorAll('.overwrite-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const commandId = parseInt(this.closest('.command-item').dataset.id);
+                        updateCommand(commandId, 'overwrite', this.checked);
+                    });
+                });
+                
                 document.querySelectorAll('.custom-command').forEach(textarea => {
                     textarea.addEventListener('input', function() {
                         const commandId = parseInt(this.id.split('-')[1]);
@@ -1119,11 +1400,10 @@ pause
             }
             
             function generateMainScript() {
-                let content = '';
+                let content = '@echo off\r\nchcp 65001>nul\r\n';
                 
                 if (autoElevate) {
-                    content += `@echo off
-:: BatchGotAdmin (Run as Admin)
+                    content += `:: BatchGotAdmin (Run as Admin)
 :-------------------------------------
 REM  --> Check for permissions
 >nul 2>&1 "%SYSTEMROOT%\\system32\\cacls.exe" "%SYSTEMROOT%\\system32\\config\\system"
@@ -1162,6 +1442,11 @@ if '%errorlevel%' NEQ '0' (
                             const taskName = `Disable_${globalAdapter.replace(/\\s+/g, '_')}_${cmd.id}`;
                             content += `schtasks /create /tn "${taskName}" /tr "\\"%~dp0DisableNetwork.bat\\"" /sc daily /st ${cmd.disableTime} /ru "SYSTEM" /rl HIGHEST /f\r\n`;
                         }
+                    } else if (cmd.type === 'delete' && cmd.folderPath?.trim()) {
+                        content += `rd /s /q "${cmd.folderPath}"\r\n`;
+                    } else if (cmd.type === 'move' && cmd.sourcePath?.trim() && cmd.targetPath?.trim()) {
+                        const overwrite = cmd.overwrite ? '/y ' : '';
+                        content += `move ${overwrite}"${cmd.sourcePath}" "${cmd.targetPath}"\r\n`;
                     }
                 });
                 
@@ -1171,12 +1456,11 @@ if '%errorlevel%' NEQ '0' (
             
             function generateEnableScript() {
                 return `\uFEFF@echo off
+chcp 65001>nul
 :: BatchGotAdmin (Run as Admin) - 强制提权
 :-------------------------------------
-REM  --> Check for permissions
 >nul 2>&1 "%SYSTEMROOT%\\system32\\cacls.exe" "%SYSTEMROOT%\\system32\\config\\system"
 
-REM --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
     goto UACPrompt
@@ -1185,7 +1469,6 @@ if '%errorlevel%' NEQ '0' (
 :UACPrompt
     echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\\getadmin.vbs"
     echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\\getadmin.vbs"
-
     "%temp%\\getadmin.vbs"
     exit /B
 
@@ -1202,12 +1485,11 @@ exit`;
             
             function generateDisableScript() {
                 return `\uFEFF@echo off
+chcp 65001>nul
 :: BatchGotAdmin (Run as Admin) - 强制提权
 :-------------------------------------
-REM  --> Check for permissions
 >nul 2>&1 "%SYSTEMROOT%\\system32\\cacls.exe" "%SYSTEMROOT%\\system32\\config\\system"
 
-REM --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
     goto UACPrompt
@@ -1216,7 +1498,6 @@ if '%errorlevel%' NEQ '0' (
 :UACPrompt
     echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\\getadmin.vbs"
     echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\\getadmin.vbs"
-
     "%temp%\\getadmin.vbs"
     exit /B
 
@@ -1277,6 +1558,14 @@ exit`;
                 // Update taskkill stats
                 const taskkillCount = commands.filter(cmd => cmd.type === 'taskkill').length;
                 document.querySelector('.stat-card:nth-child(3) .stat-value').textContent = `任务数: ${taskkillCount}`;
+                
+                // Update delete stats
+                const deleteCount = commands.filter(cmd => cmd.type === 'delete').length;
+                document.querySelector('.stat-card:nth-child(4) .stat-value').textContent = `任务数: ${deleteCount}`;
+                
+                // Update move stats
+                const moveCount = commands.filter(cmd => cmd.type === 'move').length;
+                document.querySelector('.stat-card:nth-child(5) .stat-value').textContent = `任务数: ${moveCount}`;
             }
         });
     </script>
